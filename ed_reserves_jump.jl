@@ -22,7 +22,7 @@ end
 md"""
 # Economic Dispatch (with Reserves)
 
-In this [Pluto.jl notebook](https://www.youtube.com/watch?v=IAF8DjrQSSk), I have tried to adapt a simple economic dispatch model to demonstrate how reserves (e.g. Frequency Control Ancillary Services or FCAS in Australia's National Electricity Market) might be co-optimised with energy in an energy market. Specifically, this notebook provides an example of how this co-optimisation ienables the *opportunity-cost* of reserve provision to be incorporated into pricing.
+In this [Pluto.jl notebook](https://www.youtube.com/watch?v=IAF8DjrQSSk), I have tried to adapt a simple economic dispatch model to demonstrate how reserves (e.g. Frequency Control Ancillary Services or FCAS in Australia's National Electricity Market) might be co-optimised with energy in an energy market. Specifically, this notebook provides an example of how this co-optimisation enables the *opportunity-cost* of reserve provision to be incorporated into pricing.
 
 The example and code borrows heavily from the economic dispatch tutorial available in [JuMP's documentation](https://jump.dev/JuMP.jl/dev/tutorials/Mixed-integer%20linear%20programs/power_systems/). JuMP is an optimisation framework written for Julia.
 """
