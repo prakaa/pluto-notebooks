@@ -22,7 +22,7 @@ end
 md"""
 # Economic Dispatch (with Reserves)
 
-In this [Pluto.jl notebook](https://www.youtube.com/watch?v=IAF8DjrQSSk), I have tried to adapt a simple economic dispatch model to demonstrate how reserves (e.g. Frequency Control Ancillary Services or FCAS in Australia's National Electricity Market) might be co-optimised with energy in an energy market. Specifically, this notebook provides an example of how this co-optimisation ienables the *opportunity-cost* of reserve provision to be incorporated into pricing.
+In this [Pluto.jl notebook](https://www.youtube.com/watch?v=IAF8DjrQSSk), I have tried to adapt a simple economic dispatch model to demonstrate how reserves (e.g. Frequency Control Ancillary Services or FCAS in Australia's National Electricity Market) might be co-optimised with energy in an energy market. Specifically, this notebook provides an example of how this co-optimisation enables the *opportunity-cost* of reserve provision to be incorporated into pricing.
 
 The example and code borrows heavily from the economic dispatch tutorial available in [JuMP's documentation](https://jump.dev/JuMP.jl/dev/tutorials/Mixed-integer%20linear%20programs/power_systems/). JuMP is an optimisation framework written for Julia.
 """
@@ -32,13 +32,13 @@ md"""
 ## What is economic dispatch?
 
 If you're not familiar with the term, *economic dispatch* (ED) is basically an optimisation problem that attempts to meet electricity demand with the lowest supply cost. 
-- If the system is run by a central utility, this process can help reach the utility decide how to control its generation to meet demand. 
-- If the power system has an energy market (from here on, energy is just another word for electricity), generators can *offer* their energy at various prices. In some systems, a market operator runs ED to decide which offers should be accepted to run the system at lowest cost. The process also produces *marginal prices* for energy and reserves, which sets the price that all generators supplying these products receive. This is how we run the energy market in Australia, called the National Electricity Market or NEM.
-  - We deal with marginal prices in more detail at the bottom of this notebook, but a simple way of thinking of what they represent is how much will it cost the system to produce an extra MW of energy or reserve? 
+- If the system is run by a central utility, this process can help the utility decide how to control its generation to meet demand. 
+- If the power system has an energy market (from here on, energy is just another word for electricity), generators can *offer* their energy at various prices. In some systems, a market operator runs ED to decide which offers from generators in the market should be accepted to run the system at lowest cost. The process also produces *marginal prices* for energy and reserves, which sets the price that all generators supplying these products receive. This is how we run the energy market in Australia (called the National Electricity Market or NEM).
+  - We deal with marginal prices in more detail at the bottom of this notebook, but a simple way of thinking of what they represent is how much will it cost the system to produce an extra MW of energy or reserve?.
 
 ED is an economic/market problem. For example, the constraints we include below do not consider technical requirements and limitations of the power system. However, such limits, or *constraints* can be incorporated and if this is done, we can call the problem *security-constrained economic dispatch*.
 
-Economic dispatch can result in price and dispatch outcomes that are not obvious and perhaps even counter-intuitive. Transpower NZ has done a [great video series](https://youtube.com/playlist?list=PLXUccGn4ptEO5e0-MV37_vWPWerhB8yak) on marginal pricing and the "spring-washed" effect. Another factor that can complicate economic dispatch is when reserves are included in economic dispatch and *co-optimised*. We will explore this below.
+Economic dispatch can result in price and dispatch outcomes that are not obvious and perhaps even counter-intuitive. Transpower NZ has done a [great video series](https://youtube.com/playlist?list=PLXUccGn4ptEO5e0-MV37_vWPWerhB8yak) on marginal pricing and the "spring-washer" effect. Another factor that can complicate economic dispatch is when reserves are included in economic dispatch and *co-optimised* with energy. We will explore this below.
 
 ## What are reserves?
 
@@ -53,7 +53,7 @@ These could be due to:
 - Generators tripping unexpectedly
 - Renewable energy forecast errors
 
-To provide reserves that can help increase supply (*raise* reserves) or decrease supply (*lower* services), generators may need to be turned up or down in the energy market. In this notebook, we explore how the optimisation problem and its solution accounts for this and ensures that prices incorporate any opportunity-cost.
+To provide reserves that can help increase supply (*raise* reserves) or decrease supply (*lower* services), generators may need to be turned up or down in the energy market. In this notebook, we explore how the optimisation problem and its solution accounts for this and ensures that prices incorporate any opportunity-cost (skip to the last example if you're interested in this).
 
 
 """
@@ -458,10 +458,10 @@ Why is the reserve price 280 when reserve offers are 40, 80 or 500?
 
 ##### Shadow prices and marginal prices
 
-Marginal prices for energy and reserves are essentially the price to service an infinitesimal increase in demand. For our thought experiment, we will simplify this by thinking of the cost to service the next MW of demand or reserve.
+Marginal prices for energy and reserves are essentially the price to service an infinitesimal increase in demand. For our thought experiment, we will simplify this by thinking of the cost to service the next MW of energy or reserve.
 
 ###### Formal and simpler definition
-The marginal price for energy is formally the *shadow price* of the supply-demand balance constraint (also known as the value of the Lagrange multiplier, or the value of the dual variable of the constraint at the optimal value of the dual problem). Similarly, the marginal price for reserves is the shadow price of the reserve requirement constraint. In this case, the shadow price represents the additional cost of the objective function if the constraint is relaxed. 
+The marginal price for energy is formally the *shadow price* of the supply-demand balance constraint (also known as the value of the Lagrange multiplier, or the value of the dual variable of the constraint at the optimal value of the dual problem). Similarly, the marginal price for reserves is the shadow price of the reserve requirement constraint. In this case, the shadow price represents the additional cost to the system (i.e. increase in objective function) if the constraint is relaxed. 
 
 Simply put, a shadow price is effectively the *total additional cost to the system* to supply the next MW of energy or reserve.
 
@@ -472,9 +472,9 @@ In the situation above, it is cheapest to service the next MW of energy by turni
 However, for the next MW of reserve, it is actually cheapest to turn Generator 2's energy production down 1 MW and thereby obtain 1 MW of reserve from Generator 2. However, to ensure that energy supply and demand and balanced, Generator 3 must be turned up 1 MW. Obtaining reserve from Generator 2 costs 80 (\$c^r_2\$), turning Generator 2 down 1 MW in energy "costs" -100 (turning it down actually reduces the total cost) and turning Generator 3 up 1 MW in energy costs 300, giving us a total of 280. Hence the *total* cost to the system to increase reserves by 1 MW has been accounted for.
 
 ###### Participant's perspective
-From the perspective of Generator 2, co-optimisation ensures that opporunity-cost in the energy market is accounted for. Since the price for reserves is set by Generator 2, the marginal price is the sum of its reserve offer cost and its opporunity-cost in the energy market:
+From the perspective of Generator 2, co-optimisation ensures that a lost opportunity in the energy market is accounted for. Since the price for reserves is set by Generator 2, the marginal price is the sum of its reserve offer cost and its opporunity-cost in the energy market:
 1. The reserve offer is 80.
-2. By being turned down 1 MW in the energy market, Generator 2 misses out on a profit (opportunity cost). This is:
+2. By being turned down 1 MW in the energy market, Generator 2 misses out on a profit (lost opportunity). This is:
     - (Price of energy) - (Generator 2's short run marginal cost, or assumed to be anyway), which in this case is (300)-(100) = 200. 
 The sum of these is 280, the price of reserves. Simply put, if a unit is backed off energy to provide reserves (e.g. FCAS), the optimisation will ensure that it does not miss out on any profits so long as its bids reflect short run marginal costs.
 """
