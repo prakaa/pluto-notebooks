@@ -80,9 +80,6 @@ Some major assumptions to simplify this:
 - Assume this is a regional, single price market with marginal pricing
 - Assume that generator offers reflect short-run marginal costs and that the market accepts only one price-quantity pair (in Australia's National Energy Market, 10 price-quantity pairs are accepted for energy and FCAS)
 
-The 
-
-
 Furthermore, in terms of generation, we assume:
 - Generators 1 and 2 are dispatchable (e.g. coal, CCGT, OCGT)
 - There is a third dispatchable generator for the reserve problem
