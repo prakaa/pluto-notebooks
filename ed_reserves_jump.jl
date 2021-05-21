@@ -38,6 +38,8 @@ If you're not familiar with the term, *economic dispatch* (ED) is basically an o
 
 ED is an economic/market problem. For example, the constraints we include below do not consider technical requirements and limitations of the power system. However, such limits, or *constraints* can be incorporated and if this is done, we can call the problem *security-constrained economic dispatch*.
 
+Economic dispatch can result in price and dispatch outcomes that are not obvious and perhaps even counter-intuitive. Transpower NZ has done a [great video series](https://youtube.com/playlist?list=PLXUccGn4ptEO5e0-MV37_vWPWerhB8yak) on marginal pricing and the "spring-washed" effect. Another factor that can complicate economic dispatch is when reserves are included in economic dispatch and *co-optimised*. We will explore this below.
+
 ## What are reserves?
 
 The examples below run economic dispatch for a single time interval. In reality, ED is run to cover an interval (5 minutes in the NEM). Between one ED process and another: 
