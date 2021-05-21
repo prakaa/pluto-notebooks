@@ -374,7 +374,8 @@ function solve_ed_with_reserves(g_max::Array{Float64}, g_min::Array{Float64},
 	r_con = @constraint(ed, sum(r) == R) # reserve requirement
 	@objective(ed, Min, c_g' * g + c_w * w + c_r' * r)
 	optimize!(ed)
-	return value.(g), value.(r), value(w), objective_value(ed), en_con, r_con, model
+	status = [termination_status(ed), has_duals(ed)]
+	return value.(g), value.(r), value(w), objective_value(ed), en_con, r_con, status
 end
 
 # ╔═╡ 9a7c3e64-641e-48b8-9c5f-2eb0a1e5727f
@@ -407,12 +408,23 @@ md"""
 """
 
 # ╔═╡ be45d9fc-c539-4cde-babd-92c03bc7f044
-(g_r, r_r, w_r, obj_r, en_con, r_con, r_mod) =
+(g_r, r_r, w_r, obj_r, en_con, r_con, r_status) =
 	solve_ed_with_reserves(reserve_gen_data.g_max,
 						   reserve_gen_data.g_min,
 						   reserve_gen_data.c_g,
 						   c_w, reserve_gen_data.c_r,
 						   R, d, w_f);
+
+# ╔═╡ 4ccd3a69-5b70-4cac-a4a6-f4cd69bc43be
+md"""
+Check if optimal and check for duals. The latter is important for marginal prices.
+"""
+
+# ╔═╡ 044549c9-6f24-4bb7-99e4-7a9c793e90db
+r_status[1]
+
+# ╔═╡ 000d8462-eef3-4532-9c30-aa41cdd67b79
+r_status[2]
 
 # ╔═╡ 6d70c9f6-d708-4d42-ab23-e449edc6f895
 md"""
@@ -497,10 +509,13 @@ The sum of these is 280, the price of reserves. Simply put, if a unit is backed 
 # ╟─6a158311-f151-40aa-b18c-9254378a6429
 # ╟─ed843abd-9a1d-442f-913a-473dc6d47bef
 # ╠═a8a63601-eeef-4c7d-8b43-c651cf4bbbf8
-# ╟─9a7c3e64-641e-48b8-9c5f-2eb0a1e5727f
+# ╠═9a7c3e64-641e-48b8-9c5f-2eb0a1e5727f
 # ╟─b73b8cc0-bcb6-4a96-ba68-6bd898305760
 # ╠═882ddb8c-a8eb-42cc-8f53-03723875608a
 # ╟─594d0f3f-ae19-4736-a73b-9067b182812c
 # ╠═be45d9fc-c539-4cde-babd-92c03bc7f044
+# ╟─4ccd3a69-5b70-4cac-a4a6-f4cd69bc43be
+# ╠═044549c9-6f24-4bb7-99e4-7a9c793e90db
+# ╠═000d8462-eef3-4532-9c30-aa41cdd67b79
 # ╟─6d70c9f6-d708-4d42-ab23-e449edc6f895
 # ╟─9778a606-ff49-4ce9-927c-c5cd259503e0
