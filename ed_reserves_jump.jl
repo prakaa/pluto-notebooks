@@ -313,9 +313,9 @@ begin
 	g1 = [x[1] for x in g_vec]
 	g2 = [x[2] for x in g_vec]
 	l = @layout [a{1w}; b{1w}]
-	p1 = bar(d_vec, g1, label="Generator 1", legend=:outerright)
-	bar!(d_vec, g2, label="Generator 2", legend=:outerright)
-	bar!(d_vec, w_vec, label="Wind",  legend=:outerright)
+	p1 = plot(d_vec, g1, label="Generator 1", legend=:outerright)
+	plot!(d_vec, g2, label="Generator 2", legend=:outerright)
+	plot!(d_vec, w_vec, label="Wind",  legend=:outerright)
 	ylabel!("Generation (MW)")
 	p2 = bar(d_vec, price_vec, label="Energy Price", color=:brown, 
 			 legend=:outerright)
