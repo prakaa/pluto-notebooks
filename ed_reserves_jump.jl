@@ -414,22 +414,6 @@ md"""
 						   c_w, reserve_gen_data.c_r,
 						   R, d, w_f);
 
-# ╔═╡ 62d03d73-caa3-430e-8d97-014166a0ac5c
-md"""
-Check if optimal and check for duals. The latter is important for marginal prices.
-"""
-
-# ╔═╡ a6695f34-24b0-4cf9-915a-1be3ae8ac105
-termination_status(r_mod)
-
-# ╔═╡ 3872a97b-5760-4ee3-88b5-adc22a42c34b
-has_duals(r_mod)
-
-# ╔═╡ af9e70d2-2fba-436c-8f82-9e8f941074a6
-md"""
-Primal feasible and has duals. We need the duals to find the marginal cost/shadow price.
-"""
-
 # ╔═╡ 6d70c9f6-d708-4d42-ab23-e449edc6f895
 md"""
 #### Results
@@ -518,9 +502,5 @@ The sum of these is 280, the price of reserves. Simply put, if a unit is backed 
 # ╠═882ddb8c-a8eb-42cc-8f53-03723875608a
 # ╟─594d0f3f-ae19-4736-a73b-9067b182812c
 # ╠═be45d9fc-c539-4cde-babd-92c03bc7f044
-# ╟─62d03d73-caa3-430e-8d97-014166a0ac5c
-# ╠═a6695f34-24b0-4cf9-915a-1be3ae8ac105
-# ╠═3872a97b-5760-4ee3-88b5-adc22a42c34b
-# ╟─af9e70d2-2fba-436c-8f82-9e8f941074a6
 # ╟─6d70c9f6-d708-4d42-ab23-e449edc6f895
 # ╟─9778a606-ff49-4ce9-927c-c5cd259503e0
