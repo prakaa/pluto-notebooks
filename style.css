@@ -1,0 +1,21 @@
+body {
+  background-color: #f0f0f0;
+  font-family: source sans pro;
+  margin-left: 15px;
+  }
+  
+h1 {
+  color: black;
+}
+
+h2 {
+  color: black;
+}
+
+dt {
+  font-size: medium;
+}
+
+.desc-list {
+  max-width: 50%;
+}
