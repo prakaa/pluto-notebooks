@@ -387,6 +387,20 @@ md"The chart below shows demand ramping against thermal and total generation ram
 
 To meet this ramp and avoid unserved energy (set at \$15,000/MW/hr), the system will need to appropriately 'position' thermal generation and the wind farm in preceding intervals. Specifically, if the system maximises the use of cheaper generation (wind) in intervals prior to interval 5, the system may be ill-positioned to respond to the high demand ramp."
 
+# ╔═╡ 9c29a181-9a29-4fec-85f0-ad87badf0445
+begin
+	r = plot(["$i to $(i+1)" for i in range(1, 9, step=1)],
+			 diff(demand) ./ 5.0, label="Demand Ramp", ylabel="Ramp (MW/min)",
+			 legend=:left)
+	plot!(r, 1:9, repeat([90.0], 9), label="Thermal Total Ramp Up", ls=:solid, lw=2,
+		  color=:red)
+	plot!(r, 1:9, repeat([390.0], 9), label="Thermal + Wind Total Ramp Up", ls=:dash, 	  lw=2, color=:red)
+	plot!(r, 1:9, repeat([-200.0], 9), label="Thermal Total Ramp Down", ls=:solid, 		  lw=2, color=:purple)
+	plot!(r, 1:9, repeat([-500.0], 9), label="Thermal + Wind Total Ramp Down", 			  ls=:dash, lw=2, legend=:outerbottom, color=:purple)
+	title!("Demand Ramping vs. Generator Ramp Rates")
+	annotate!([(4.75, -350, "Wind is assumed to be capable of very\nhigh ramp rates within its capacity limits", 8)])
+end
+
 # ╔═╡ f00e8a37-a2ba-4744-8abc-675b51f774d4
 md"### Run different dispatch processes
 
@@ -629,26 +643,12 @@ begin
 	(prices_11, gen_11, usmw_11) = run_multiperiod(demand1, 10)
 	coal_11 = gen_11[gen_11[:, :generator].==Symbol("Coal"), :generation]
 	coal_10 = gen_10[gen_10[:, :generator].==Symbol("Coal"), :generation]
-	diff = DataFrame(:interval=>1:10, :diff=>(coal_11 .- coal_10))
-	diff |> @vlplot(
+	diff_gen = DataFrame(:interval=>1:10, :diff=>(coal_11 .- coal_10))
+	diff_gen |> @vlplot(
 		:bar, width=450, height=150,
 		x={"interval:o", axis={title="Interval"}}, y={:diff, axis={title="MW"}},
 		title="Additional generation from coal unit (1 MW additional demand in interval 3)"
 	)
-end
-
-# ╔═╡ 9c29a181-9a29-4fec-85f0-ad87badf0445
-begin
-	r = plot(["$i to $(i+1)" for i in range(1, 9, step=1)],
-			 diff(demand) ./ 5.0, label="Demand Ramp", ylabel="Ramp (MW/min)",
-			 legend=:left)
-	plot!(r, 1:9, repeat([90.0], 9), label="Thermal Total Ramp Up", ls=:solid, lw=2,
-		  color=:red)
-	plot!(r, 1:9, repeat([390.0], 9), label="Thermal + Wind Total Ramp Up", ls=:dash, 	  lw=2, color=:red)
-	plot!(r, 1:9, repeat([-200.0], 9), label="Thermal Total Ramp Down", ls=:solid, 		  lw=2, color=:purple)
-	plot!(r, 1:9, repeat([-500.0], 9), label="Thermal + Wind Total Ramp Down", 			  ls=:dash, lw=2, legend=:outerbottom, color=:purple)
-	title!("Demand Ramping vs. Generator Ramp Rates")
-	annotate!([(4.75, -350, "Wind is assumed to be capable of very\nhigh ramp rates within its capacity limits", 8)])
 end
 
 # ╔═╡ 91b4f5e8-ec60-4ed7-b51b-bde96d964ea8
