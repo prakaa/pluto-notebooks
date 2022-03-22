@@ -17,7 +17,7 @@ jobs:
             - name: Install Julia
               uses: julia-actions/setup-julia@v1
               with:
-                  version: 1.6
+                  version: 1.7
 
 
             # We set up a folder that Pluto can use to cache exported notebooks. If the notebook file did not change, then Pluto can take the exported file from cache instead of running the notebook.
@@ -31,17 +31,21 @@ jobs:
 
 
             - name: Run & export Pluto notebooks
-              run: julia -e 'using Pkg;
-                  Pkg.activate(mktempdir());
+              run: |
+                julia -e 'using Pkg
+                  Pkg.activate(mktempdir())
                   Pkg.add([
-                    Pkg.PackageSpec(name="PlutoSliderServer", version="0.2.1-0.2"),
-                  ]);
+                    Pkg.PackageSpec(name="PlutoSliderServer", version="0.3.2-0.3"),
+                  ])
 
-                  import PlutoSliderServer;
+                  import PlutoSliderServer
 
-                  PlutoSliderServer.github_action(;
+                  PlutoSliderServer.github_action(".";
                     Export_cache_dir="pluto_state_cache",
-                  );'
+                    Export_baked_notebookfile=false,
+                    Export_baked_state=false,
+                    # more parameters can go here
+                  )'
 
 
             - name: Deploy to gh-pages
