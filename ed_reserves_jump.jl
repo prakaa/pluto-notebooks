@@ -5,18 +5,7 @@ using Markdown
 using InteractiveUtils
 
 # ╔═╡ 6bf099a5-48cd-466b-8f83-b4c3adedf7be
-begin
-	# see https://github.com/JuliaPluto/static-export-template
-    import Pkg
-    Pkg.activate(mktempdir())
-    Pkg.add([
-        Pkg.PackageSpec(name="DataFrames", version="1"),
-        Pkg.PackageSpec(name="GLPK", version="0.14"),
-        Pkg.PackageSpec(name="JuMP", version="0.21"),
-        Pkg.PackageSpec(name="Plots", version="1"),
-    ])
-    using DataFrames, GLPK, JuMP, Plots
-end
+using DataFrames, GLPK, JuMP, Plots
 
 # ╔═╡ 658534ae-b901-11eb-3a20-153b9188b496
 md"""
