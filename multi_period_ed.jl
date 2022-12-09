@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.18.1
+# v0.19.17
 
 using Markdown
 using InteractiveUtils
@@ -28,25 +28,30 @@ end
 # ╔═╡ c2e7dc36-b8fc-471c-a6f3-f80aef467eb0
 md"# Multi vs. Single Period Dispatch
 
-In this [Pluto.jl notebook](https://www.youtube.com/watch?v=IAF8DjrQSSk), I dig into the dispatch and pricing implications of multi-period economic dispatch. In the Australian National Electricity Market, economic dispatch is single period - that is, the optimisation problem (meeting demand at lowest generation cost) is solved for a single interval. In multi-period dispatch, the optimiser finds a solution such that demand over several intervals is met at lowest cost. A couple of the Independent System Operators in the U.S. (e.g. CAISO and MISO) have implemented some form of multi-period dispatch ([see this excellent overview by Dane Schiro from ISO-NE](https://www.ferc.gov/sites/default/files/2020-08/M1-3_Schiro.pdf)).
+In this [Pluto.jl notebook](https://www.youtube.com/watch?v=IAF8DjrQSSk), I dig into the dispatch and pricing implications of multi-period economic dispatch. In the Australian National Electricity Market, economic dispatch is single period - that is, the optimisation problem (which we can simplify to *meeting demand at lowest generation cost*) is solved for a single interval. In multi-period dispatch, the optimiser finds a solution such that demand over several intervals is met at lowest cost.
+
+A couple of the Independent System Operators in the U.S. (e.g. CAISO and MISO) have implemented some form of multi-period dispatch ([see this excellent overview by Dane Schiro from ISO-NE](https://www.ferc.gov/sites/default/files/2020-08/M1-3_Schiro.pdf)).
 
 This notebook was inspired by the papers below:
 - E. Ela and M. O'Malley, [Scheduling and Pricing for Expected Ramp Capability in Real-Time Power Markets](https://ieeexplore.ieee.org/document/7192736), IEEE Transactions on Power Systems
 - Jacob Mays, [Missing incentives for flexibility in wholesale electricity markets](https://doi.org/10.1016/j.enpol.2020.112010), Energy Policy
 
 ## A little intro to multi-period dispatch
-Why are we interested in multi-period dispatch? It comes down to how dispatch variability (expected changes in supply/demand) - specifically, resource ramping in response to demand changes. 
+Why are we interested in multi-period dispatch? It comes down to how it can address dispatch variability (expected changes in supply/demand). Multi-period dispatch can ramp resources in response to demand changes. 
 
-- Single period dispatch has what we'll call *backwards-looking* ramping constraints: is the ramp from the operating point at the end of the previous interval to the target at the end of this interval feasible for that resource? 
-- Multi-period dispatch also backwards-looking ramping constraints, but also incorporates *forward-looking* ramping constraints: is the ramp from the target at the end of this interval to the target at the end of the following interval feasible?
+### Single vs multi-period ramping constraints
+- Single period dispatch has what we'll call *backwards-looking* ramping constraints: *is the ramp from the operating point at the end of the previous interval to the target at the end of this interval feasible for that resource?* 
+- Multi-period dispatch has backwards-looking ramping constraints, but also incorporates *forward-looking* ramping constraints: *is the ramp from the target at the end of this interval to the target at the end of the following interval feasible?*
 
-The incorporation of *forward-looking* ramping constraints has interesting pricing implications we'll look at in this notebook.
+The **incorporation of forward-looking ramping constraints has interesting pricing implications we'll look at in this notebook**.
 
 ## Some things to take note of
 
-1. Our example assumes perfect foresight. That is, multi-period dispatch can be used to help manage variability but it may not ensure a feasible dispatch outcome if there is uncertainty (e.g. renewable energy or demand forecast errors). This becomes more important the greater the number of periods that the multi-period dispatch solves for.
+1. Our example **assumes perfect foresight**. That is, multi-period dispatch can be used to help manage variability but it **may not ensure a feasible dispatch outcome if there is uncertainty (e.g. renewable energy or demand forecast errors)**.
+    - This becomes more relevant the greater the number of periods that the multi-period dispatch solves for.
 2. We solve each *horizon* (the number of periods solved simultaneously in a multi-dispatch problem) sequentially. For example, for a 2-period dispatch, we solve periods 1 & 2 simultaneously, then periods 3 & 4 simultaneously, etc.
-    - However, in ISO markets, this is not the case. Rather than solving problems sequentially, system operators typically take a *rolling-horizon* approach. For example, for a 3-period dispatch problem, periods 1, 2 & 3 are solved simultaneously. Then as we near the start of dispatch interval 2, periods 2, 3 & 4 are solved simultaneously, etc. This means that the latest information can be used in dispatch.
+    - However, rather than solving problems sequentially, ISO markets typically take a *rolling-horizon* approach. 
+      - For example, for a 3-period dispatch problem, periods 1, 2 & 3 are solved simultaneously. Then as we near the start of dispatch interval 2, periods 2, 3 & 4 are solved simultaneously, etc. A rolling horizon approach enables the latest information to be used in dispatch.
 3. [As discussed by Schiro](https://www.ferc.gov/sites/default/files/2020-08/M1-3_Schiro.pdf), where multi-period dispatch has been implemented, only the price of the first interval is typically considered *binding* (i.e. relevant for market settlement); the prices of the following intervals are considered to be *advisory*. This is a practical but incomplete implementation of multi-period dispatch as the resulting series of prices, not a single price, ensure there is sufficient incentive for participants to meet system needs and comply with dispatch instructions.
 "
 
@@ -210,7 +215,7 @@ Here we create a few generators. The operational envelope of each generator (i.e
 We have:
 1. A less flexible coal plant with a higher minimum stable level. This plant represents the bulk of the system's generation capacity. The coal plant offers energy into the market at its fuel price. 
 2. A more flexible peaker plant with a lower minimum stable level. This peaker plant offers energy to the market at a premium of \$1000/MW/hr.
-3. A very flexible wind farm that offers energy into the market at no cost.. Note that we assume that the wind farm is able to generate freely in its capacity range (i.e. wind generation is not constrained by wind availability). As a result, the wind farm can ramp almost instantaneously within its generation limits.
+3. A very flexible wind farm that offers energy into the market at no cost. Note that we assume that the wind farm is able to generate freely in its capacity range (i.e. wind generation is not constrained by wind availability). As a result, the wind farm can ramp almost instantaneously within its generation limits.
 "
 
 # ╔═╡ 9f8913c5-6aa4-4137-9ab7-5f4313371b7d
@@ -710,8 +715,9 @@ VegaLite = "~2.6.0"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.7.2"
+julia_version = "1.8.2"
 manifest_format = "2.0"
+project_hash = "c619ac801b5cdbcdbb71eef8ad2bcf41c2c50240"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -727,6 +733,7 @@ version = "3.3.3"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
+version = "1.1.1"
 
 [[deps.Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
@@ -815,6 +822,7 @@ version = "3.42.0"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
+version = "0.5.2+0"
 
 [[deps.ConstructionBase]]
 deps = ["LinearAlgebra"]
@@ -892,8 +900,9 @@ uuid = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
 version = "0.8.6"
 
 [[deps.Downloads]]
-deps = ["ArgTools", "LibCURL", "NetworkOptions"]
+deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+version = "1.6.0"
 
 [[deps.EarCut_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -936,6 +945,9 @@ deps = ["Compat", "Dates", "Mmap", "Printf", "Test", "UUIDs"]
 git-tree-sha1 = "129b104185df66e408edd6625d480b7f9e9823a0"
 uuid = "48062228-2e41-5def-b9a4-89aafe57970f"
 version = "0.9.18"
+
+[[deps.FileWatching]]
+uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
 [[deps.FixedPointNumbers]]
 deps = ["Statistics"]
@@ -998,6 +1010,7 @@ version = "5.0.1+0"
 [[deps.GMP_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "781609d7-10c4-51f6-84f2-b8444358ff6d"
+version = "6.2.1+2"
 
 [[deps.GR]]
 deps = ["Base64", "DelimitedFiles", "GR_jll", "HTTP", "JSON", "Libdl", "LinearAlgebra", "Pkg", "Printf", "Random", "RelocatableFolders", "Serialization", "Sockets", "Test", "UUIDs"]
@@ -1166,10 +1179,12 @@ version = "0.15.13"
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
 uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
+version = "0.6.3"
 
 [[deps.LibCURL_jll]]
 deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
+version = "7.84.0+0"
 
 [[deps.LibGit2]]
 deps = ["Base64", "NetworkOptions", "Printf", "SHA"]
@@ -1178,6 +1193,7 @@ uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
 [[deps.LibSSH2_jll]]
 deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
 uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
+version = "1.10.2+0"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -1268,6 +1284,7 @@ version = "1.0.3"
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
+version = "2.28.0+0"
 
 [[deps.Measures]]
 git-tree-sha1 = "e498ddeee6f9fdb4551ce855a46f54dbd900245f"
@@ -1285,6 +1302,7 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
+version = "2022.2.1"
 
 [[deps.MutableArithmetics]]
 deps = ["LinearAlgebra", "SparseArrays", "Test"]
@@ -1299,6 +1317,7 @@ version = "0.3.7"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
+version = "1.2.0"
 
 [[deps.NodeJS]]
 deps = ["Pkg"]
@@ -1315,10 +1334,12 @@ version = "1.3.5+1"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
+version = "0.3.20+0"
 
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
+version = "0.8.1+0"
 
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1364,6 +1385,7 @@ version = "0.40.1+0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+version = "1.8.0"
 
 [[deps.PlotThemes]]
 deps = ["PlotUtils", "Requires", "Statistics"]
@@ -1417,9 +1439,9 @@ uuid = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
 
 [[deps.Qt5Base_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Fontconfig_jll", "Glib_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "OpenSSL_jll", "Pkg", "Xorg_libXext_jll", "Xorg_libxcb_jll", "Xorg_xcb_util_image_jll", "Xorg_xcb_util_keysyms_jll", "Xorg_xcb_util_renderutil_jll", "Xorg_xcb_util_wm_jll", "Zlib_jll", "xkbcommon_jll"]
-git-tree-sha1 = "ad368663a5e20dbb8d6dc2fddeefe4dae0781ae8"
+git-tree-sha1 = "0c03844e2231e12fda4d0086fd7cbe4098ee8dc5"
 uuid = "ea2cea3b-5b76-57ae-a6ef-0a8af62496e1"
-version = "5.15.3+0"
+version = "5.15.3+2"
 
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
@@ -1459,6 +1481,7 @@ version = "1.3.0"
 
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
+version = "0.7.0"
 
 [[deps.Scratch]]
 deps = ["Dates"]
@@ -1535,6 +1558,7 @@ version = "0.6.5"
 [[deps.TOML]]
 deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
+version = "1.0.0"
 
 [[deps.TableTraits]]
 deps = ["IteratorInterfaceExtensions"]
@@ -1557,6 +1581,7 @@ version = "1.7.0"
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
 uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
+version = "1.10.1"
 
 [[deps.Test]]
 deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
@@ -1762,6 +1787,7 @@ version = "1.4.0+3"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
+version = "1.2.12+3"
 
 [[deps.Zstd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1778,6 +1804,7 @@ version = "0.15.1+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl", "OpenBLAS_jll"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
+version = "5.1.1+0"
 
 [[deps.libfdk_aac_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1800,10 +1827,12 @@ version = "1.3.7+1"
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
+version = "1.48.0+0"
 
 [[deps.p7zip_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
+version = "17.4.0+0"
 
 [[deps.x264_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
